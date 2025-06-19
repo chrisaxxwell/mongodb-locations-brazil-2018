@@ -68,10 +68,18 @@ const result = await collection.findOne(query);
 
 //Para encontrar por rua, bairro e cidade (recomendo [rua, bairro, cidade]) para facilitar;
 const address = "nome da rua, bairro, cidade".split(", ");  //Isso busca as localizações mais especificas!
+//Normalize as strings Rua São = rua sao
+const normalize = (str) => {
+   return (str || '')
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
+};
 query = {
-    raw_street: {$eq: address[ 0 ]},
-    raw_district: {$eq: address[ 1 ]},
-    raw_city: {$eq: address[ 2 ]},
+    raw_street: {$eq: normalize(address[ 0 ])},
+    raw_district: {$eq: normalize(address[ 1 ])},
+    raw_city: {$eq: normalize(address[ 2 ])},
 };
 const result = await collection.find(query).limit(20).toArray();
 
